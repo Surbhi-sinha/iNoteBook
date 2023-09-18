@@ -69,6 +69,7 @@ router.post('/login',[
       //in ideal situation when there are no errors we will destructure the request and extract the password and email.
       const{email,password} = req.body;
       const JWT_SECRET = "surbhi81308"
+      let success = false;
       try{
             let user =await User.findOne({email});
             if(!user){
@@ -76,7 +77,8 @@ router.post('/login',[
             }
             const passwordCompare =await bcrypt.compare(password, user.password);
             if(!passwordCompare){
-                  return res.status(400).json({error: "please enter correct credentials"});
+                  success = flase;
+                  return res.status(400).json({success , error: "please enter correct credentials"});
             }
             data = {
                   user:{
@@ -84,8 +86,9 @@ router.post('/login',[
                   }
             },
             authToken = jwt.sign(data,JWT_SECRET),
+            success = true;
             // console.log(authToken),
-            res.json(authToken) 
+            res.json({success,authToken}) 
       }catch(error){
             console.log(error.message);
             res.status(500).send("internal server error occured")
